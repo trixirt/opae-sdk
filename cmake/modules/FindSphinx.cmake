@@ -24,25 +24,31 @@
 ## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED OF THE
 ## POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8.12)
-include(packaging)
-
-################# generate executable python zip files ########################
-
-set(PKG_COMMON_FILES
-    "afu.py gbs.py utils.py metadata/constants.py metadata/__init__.py metadata/metadata.py schema/afu_schema_v01.json")
-
-set(PKG_PYTHON_FILES "packager.py ${PKG_COMMON_FILES} README")
-CREATE_PYTHON_EXE(packager packager ${PKG_PYTHON_FILES})
-set(PACKAGER_BIN_LIST ${PACKAGER_BIN})
-
-set(AFU_JSON_MGR_FILES "afu_json_mgr.py ${PKG_COMMON_FILES} schema/afu_template.json")
-CREATE_PYTHON_EXE(afu_json_mgr afu_json_mgr ${AFU_JSON_MGR_FILES})
-list(APPEND PACKAGER_BIN_LIST ${PACKAGER_BIN})
+set(_python_paths)
+find_package(PythonInterp)
+if(PYTHON_EXECUTABLE)
+  get_filename_component(_python_dir "${PYTHON_EXECUTABLE}" DIRECTORY)
+  list(APPEND _python_paths
+    "${_python_dir}"
+    "${_python_dir}/Scripts")
+endif()
 
 
-################# install executable python zip files ######################## 
+find_program(SPHINX_EXECUTABLE
+  NAMES
+    sphinx-build
+  HINTS
+    ${_python_paths}
+  PATHS
+    /usr/bin
+    /usr/local/bin
+    /opt/local/bin
+  DOC "Sphinx documentation generator")
 
-install(PROGRAMS ${PACKAGER_BIN_LIST}
-        DESTINATION bin
-        COMPONENT toolpackager)
+include(FindPackageHandleStandardArgs)
+
+find_package_handle_standard_args(Sphinx
+  DEFAULT_MSG
+  SPHINX_EXECUTABLE)
+
+mark_as_advanced(SPHINX_EXECUTABLE)

@@ -24,25 +24,56 @@
 ## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED OF THE
 ## POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8.12)
-include(packaging)
+project(sphinx)
 
-################# generate executable python zip files ########################
+# configured documentation tools and intermediate build results
+set(BINARY_BUILD_DIR "${CMAKE_BINARY_DIR}/sphinx/_build")
 
-set(PKG_COMMON_FILES
-    "afu.py gbs.py utils.py metadata/constants.py metadata/__init__.py metadata/metadata.py schema/afu_schema_v01.json")
+# Sphinx cache with pickled ReST documents
+set(SPHINX_CACHE_DIR "${CMAKE_BINARY_DIR}/sphinx/_doctrees")
 
-set(PKG_PYTHON_FILES "packager.py ${PKG_COMMON_FILES} README")
-CREATE_PYTHON_EXE(packager packager ${PKG_PYTHON_FILES})
-set(PACKAGER_BIN_LIST ${PACKAGER_BIN})
+# Documentation number
+if(HASH_ARCHIVES)
+  set(SPHINX_DOC_RELEASE "${INTEL_FPGA_API_VERSION}.${GIT_COMMIT_HASH}")
+else()
+  set(SPHINX_DOC_RELEASE "${INTEL_FPGA_API_VERSION}")
+endif()
 
-set(AFU_JSON_MGR_FILES "afu_json_mgr.py ${PKG_COMMON_FILES} schema/afu_template.json")
-CREATE_PYTHON_EXE(afu_json_mgr afu_json_mgr ${AFU_JSON_MGR_FILES})
-list(APPEND PACKAGER_BIN_LIST ${PACKAGER_BIN})
+# HTML output directory
+set(SPHINX_HTML_DIR "${CMAKE_BINARY_DIR}/sphinx/html/${SPHINX_DOC_RELEASE}")
 
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
+  "${BINARY_BUILD_DIR}/conf.py"
+  @ONLY)
 
-################# install executable python zip files ######################## 
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/index.rst.in"
+  "${BINARY_BUILD_DIR}/index.rst"
+  @ONLY)
 
-install(PROGRAMS ${PACKAGER_BIN_LIST}
-        DESTINATION bin
-        COMPONENT toolpackager)
+add_custom_target(copy-doxygen-files ALL
+  COMMAND cmake -E copy_directory ${CMAKE_BINARY_DIR}/doc/xml ${BINARY_BUILD_DIR}/doxygen_xml
+  DEPENDS doxygen)
+
+add_custom_target(copy-markdown-files ALL
+  COMMAND cmake -E copy_directory ${CMAKE_SOURCE_DIR}/doc/src ${BINARY_BUILD_DIR}/docs)
+
+add_custom_target(copy-include-files ALL
+  COMMAND cmake -E copy_directory ${CMAKE_SOURCE_DIR}/common/include ${BINARY_BUILD_DIR}/docs/fpga_api/include
+  DEPENDS copy-markdown-files)
+
+add_custom_target(docs ALL
+  ${SPHINX_EXECUTABLE}
+  -q -b html
+  -c "${BINARY_BUILD_DIR}"
+  -d "${SPHINX_CACHE_DIR}"
+  "${BINARY_BUILD_DIR}"
+  "${SPHINX_HTML_DIR}"
+  WORKING_DIRECTORY "${BINARY_BUILD_DIR}"
+  COMMENT "Building HTML documentation with Sphinx")
+
+add_dependencies(docs
+  copy-doxygen-files
+  copy-markdown-files
+  copy-include-files)
