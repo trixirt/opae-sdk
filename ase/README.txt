@@ -34,7 +34,8 @@ Steps to run ASE on Windows
 	1). Go to ASE_folder\ase, run scripts\generate_ase_environment.py from 1st terminal:	   
 	   scripts\generate_ase_environment.py sample_config/intg_xeon_nlb/rtl -t QUESTA -p intg_xeon 
 	   This generates ase_sources.bat and vlog_files.list.
-	   TODO: this python script doesn't work on Windows yet. Need to enable it soon. 
+	   
+	   TODO: This python script doesn't work on Windows yet. Need to enable it soon. 
 	 
 	2). ASE_folder\ase\server.bat script is used to start the server 
 		a. server clean : deletes files for new session 
