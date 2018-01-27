@@ -79,7 +79,7 @@ SET ASEHW_FILE_LIST=%ASE_SRCDIR%/rtl/ccip_if_pkg.sv %ASE_SRCDIR%/rtl/ase_pkg.sv 
 SET ASE_INCDIR=%ASE_SRCDIR%/rtl/+
 
 ::## ASE SW file setup
-SET ASESW_FILE_LIST=%ASE_SRCDIR%/sw/ase_ops.c %ASE_SRCDIR%/sw/ipc_mgmt_ops.c %ASE_SRCDIR%/sw/mem_model.c %ASE_SRCDIR%/sw/protocol_backend.c %ASE_SRCDIR%/sw/tstamp_ops.c %ASE_SRCDIR%/sw/mqueue_ops.c %ASE_SRCDIR%/sw/error_report.c %ASE_SRCDIR%/sw/linked_list_ops.c %ASE_SRCDIR%/sw/randomness_control.c
+SET ASESW_FILE_LIST=%ASE_SRCDIR%/sw/ase_strings.c %ASE_SRCDIR%/sw/ase_ops.c %ASE_SRCDIR%/sw/ipc_mgmt_ops.c %ASE_SRCDIR%/sw/mem_model.c %ASE_SRCDIR%/sw/protocol_backend.c %ASE_SRCDIR%/sw/tstamp_ops.c %ASE_SRCDIR%/sw/mqueue_ops.c %ASE_SRCDIR%/sw/error_report.c %ASE_SRCDIR%/sw/linked_list_ops.c %ASE_SRCDIR%/sw/randomness_control.c
 
 echo %ASEHW_FILE_LIST%
 

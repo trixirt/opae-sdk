@@ -423,7 +423,6 @@ void session_init(void)
 
 		// Thread error integer
 	
-		//int thr_err;
 
 		// Start MSI-X watcher thread
 		// ASE_MSG("Starting Interrupt watcher ... ");
@@ -1511,14 +1510,14 @@ static int send_fd(int sock_fd, int fd, struct event_request *req)
 int register_event(int event_handle, int flags)
 {
     struct sockaddr_un saddr;
-    errno_t err;
     int res;
     int sock_fd;
 
     saddr.sun_family = AF_UNIX;
-	err = generate_sockname(saddr.sun_path);
-	if (err != EOK)
+	res = generate_sockname(saddr.sun_path);
+	if (res < 0) {
 		return 1;
+    }
     /* open socket */
     sock_fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sock_fd < 0) {
@@ -1550,12 +1549,12 @@ int unregister_event(int event_handle)
     struct sockaddr_un saddr;
     int res;
     struct event_request req;
-    errno_t err;
     int sock_fd;
 
-	err = generate_sockname(saddr.sun_path);
-	if (err != EOK)
+	res = generate_sockname(saddr.sun_path);
+	if (res < 0) {
 		return 1;
+    }
 
     /* open socket */
     sock_fd = socket(AF_UNIX, SOCK_STREAM, 0);

@@ -37,6 +37,8 @@
 #include <errno.h>
 #include <opae/types.h>
 
+#include "safe_string/safe_string.h"
+
 #include "types_int.h"
 #include "sysfs_int.h"
 #include "log_int.h"
@@ -269,7 +271,7 @@ fpga_result __FIXME_MAKE_VISIBLE__ sysfs_write_u64(const char *path, uint64_t u)
 		goto out_close;
 	}
 
-	snprintf(buf, sizeof(buf), "0x%lx", u);
+	snprintf_s_l(buf, sizeof(buf), "0x%lx", u);
 
 	do {
 		res = write(fd, buf + b, sizeof(buf) -b);
@@ -364,7 +366,7 @@ fpga_result sysfs_get_socket_id(int dev, uint8_t *socket_id)
 	char spath[SYSFS_PATH_MAX];
 	int i;
 
-	snprintf(spath, SYSFS_PATH_MAX,
+	snprintf_s_ii(spath, SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH
 		 SYSFS_FME_PATH_FMT "/"
 		 FPGA_SYSFS_SOCKET_ID,
@@ -385,7 +387,7 @@ fpga_result sysfs_get_afu_id(int dev, fpga_guid guid)
 {
 	char spath[SYSFS_PATH_MAX];
 
-	snprintf(spath, SYSFS_PATH_MAX,
+	snprintf_s_ii(spath, SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH
 		 SYSFS_AFU_PATH_FMT "/"
 		 FPGA_SYSFS_AFU_GUID,
@@ -398,7 +400,7 @@ fpga_result sysfs_get_pr_id(int dev, fpga_guid guid)
 {
 	char spath[SYSFS_PATH_MAX];
 
-	snprintf(spath, SYSFS_PATH_MAX,
+	snprintf_s_ii(spath, SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH
 		 SYSFS_FME_PATH_FMT "/"
 		 FPGA_SYSFS_FME_INTERFACE_ID,
@@ -412,7 +414,7 @@ fpga_result sysfs_get_slots(int dev, uint32_t *slots)
 {
 	char spath[SYSFS_PATH_MAX];
 
-	snprintf(spath, SYSFS_PATH_MAX,
+	snprintf_s_ii(spath, SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH
 		 SYSFS_FME_PATH_FMT "/"
 		 FPGA_SYSFS_NUM_SLOTS,
@@ -426,7 +428,7 @@ fpga_result sysfs_get_bitstream_id(int dev, uint64_t *id)
 {
 	char spath[SYSFS_PATH_MAX];
 
-	snprintf(spath, SYSFS_PATH_MAX,
+	snprintf_s_ii(spath, SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH
 		 SYSFS_FME_PATH_FMT "/"
 		 FPGA_SYSFS_BITSTREAM_ID,
@@ -443,7 +445,7 @@ fpga_result get_port_sysfs(fpga_handle handle,
 	struct _fpga_token  *_token;
 	struct _fpga_handle *_handle  = (struct _fpga_handle *)handle;
 	char *p                       = 0;
-	int device_id                 = 0;
+	int device_instance           = 0;
 
 	if (sysfs_port == NULL) {
 		FPGA_ERR("Invalid output pointer");
@@ -472,11 +474,11 @@ fpga_result get_port_sysfs(fpga_handle handle,
 		return FPGA_INVALID_PARAM;
 	}
 
-	device_id = atoi(p + 1);
+	device_instance = atoi(p + 1);
 
-	snprintf(sysfs_port, SYSFS_PATH_MAX,
+	snprintf_s_ii(sysfs_port, SYSFS_PATH_MAX,
 		SYSFS_FPGA_CLASS_PATH SYSFS_AFU_PATH_FMT,
-		device_id, device_id);
+		device_instance, device_instance);
 
 	return FPGA_OK;
 }
@@ -489,7 +491,7 @@ fpga_result get_fpga_deviceid(fpga_handle handle,
 	struct _fpga_handle  *_handle    = (struct _fpga_handle *)handle;
 	char sysfs_path[SYSFS_PATH_MAX]  = {0};
 	char *p                          = NULL;
-	int device_id                    = 0;
+	int device_instance              = 0;
 	fpga_result result               = FPGA_OK;
 	int err                          = 0;
 
@@ -529,12 +531,12 @@ fpga_result get_fpga_deviceid(fpga_handle handle,
 		goto out_unlock;
 	}
 
-	device_id = atoi(p + 1);
+	device_instance = atoi(p + 1);
 
 	snprintf(sysfs_path,
 		 SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH SYSFS_FPGA_FMT"/%s",
-		 device_id,
+		 device_instance,
 		 FPGA_SYSFS_DEVICEID);
 
 	result = sysfs_read_u64(sysfs_path, deviceid);
@@ -556,7 +558,7 @@ fpga_result sysfs_deviceid_from_path(const char *sysfspath,
 {
 	char sysfs_path[SYSFS_PATH_MAX]  = {0};
 	char *p                          = NULL;
-	int device_id                    = 0;
+	int device_instance              = 0;
 	fpga_result result               = FPGA_OK;
 
 	if (deviceid == NULL) {
@@ -576,12 +578,12 @@ fpga_result sysfs_deviceid_from_path(const char *sysfspath,
 		return FPGA_NOT_SUPPORTED;
 	}
 
-	device_id = atoi(p + 1);
+	device_instance = atoi(p + 1);
 
 	snprintf(sysfs_path,
 		 SYSFS_PATH_MAX,
 		 SYSFS_FPGA_CLASS_PATH SYSFS_FPGA_FMT"/%s",
-		 device_id,
+		 device_instance,
 		 FPGA_SYSFS_DEVICEID);
 
 	result = sysfs_read_u64(sysfs_path, deviceid);

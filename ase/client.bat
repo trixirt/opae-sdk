@@ -22,8 +22,8 @@ SET CC_OPT=-std=c99 -I %ASE_SRCDIR%/../common/include/ -I %MTI_HOME%/include/ -I
 ::########################################################################
 
 ::## ASE SW file setup
-SET ASESW_FILE_LIST=%ASE_SRCDIR%/sw/app_backend.c %ASE_SRCDIR%/sw/ase_ops.c %ASE_SRCDIR%/sw/error_report.c %ASE_SRCDIR%/sw/mqueue_ops.c %ASE_SRCDIR%/sw/tstamp_ops.c %ASE_SRCDIR%\api\src\buffer.c %ASE_SRCDIR%\api\src\close.c %ASE_SRCDIR%/api\src\common.c %ASE_SRCDIR%/api\src\enum.c %ASE_SRCDIR%/api\src\event.c %ASE_SRCDIR%/api\src\manage.c %ASE_SRCDIR%/api\src\mmio.c %ASE_SRCDIR%/api\src\open.c %ASE_SRCDIR%/api\src\umsg.c
-SET ASESW_OBJ_LIST=app_backend.o ase_ops.o error_report.o mqueue_ops.o tstamp_ops.o buffer.o close.o common.o enum.o event.o manage.o mmio.o open.o umsg.o
+SET ASESW_FILE_LIST=%ASE_SRCDIR%/sw/app_backend.c %ASE_SRCDIR%/sw/ase_strings.c %ASE_SRCDIR%/sw/ase_ops.c %ASE_SRCDIR%/sw/error_report.c %ASE_SRCDIR%/sw/mqueue_ops.c %ASE_SRCDIR%/sw/tstamp_ops.c %ASE_SRCDIR%\api\src\buffer.c %ASE_SRCDIR%\api\src\close.c %ASE_SRCDIR%/api\src\common.c %ASE_SRCDIR%/api\src\enum.c %ASE_SRCDIR%/api\src\event.c %ASE_SRCDIR%/api\src\manage.c %ASE_SRCDIR%/api\src\mmio.c %ASE_SRCDIR%/api\src\open.c %ASE_SRCDIR%/api\src\umsg.c
+SET ASESW_OBJ_LIST=app_backend.o ase_strings.o ase_ops.o error_report.o mqueue_ops.o tstamp_ops.o buffer.o close.o common.o enum.o event.o manage.o mmio.o open.o umsg.o
 
 set ASE_WORKDIR=%ASE_SRCDIR%\%WORK%
 
