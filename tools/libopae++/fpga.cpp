@@ -40,7 +40,6 @@ namespace fpga
 
 fpga::fpga(shared_token token, fpga_properties props, const std::string & sysfspath)
 : fpga_resource(token, props, nullptr)
-, status_(fpga::unknown)
 , sysfspath_(sysfspath)
 {
 }

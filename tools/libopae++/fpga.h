@@ -61,7 +61,6 @@ public:
 private:
 
     fpga(shared_token, fpga_properties props, const std::string & sysfspath);
-    status_t status_;
     std::string sysfspath_;
 };
 

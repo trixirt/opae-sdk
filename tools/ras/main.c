@@ -226,9 +226,11 @@ static const char * const RAS_BBS_ERROR[] = {
 		"Injected Catastrophic Error detected", \
 };
 
+#if 0
 static const char * const RAS_WARNING_ERROR[] = {
 		"Green bitstream fatal event error detected.", \
 };
+#endif
 
 static const char * const PORT_ERROR[] = {
 		"Tx Channel 0 overflow error detected.", \

@@ -237,7 +237,7 @@ int read_bitstream(struct CoreIdleCommandLine *coreidleCmdLine)
 	long len        = 0;
 	int ret         = 0;
 
-	if ( !coreidleCmdLine || !coreidleCmdLine->filename )
+	if (!coreidleCmdLine)
 		return -EINVAL;
 
 	/* open file */
