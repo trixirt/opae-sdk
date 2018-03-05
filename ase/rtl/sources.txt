@@ -6,6 +6,7 @@
 
 +incdir+.
 
+-F device_models/sources.txt
 ase_pkg.sv
 outoforder_wrf_channel.sv
 inorder_wrf_channel.sv

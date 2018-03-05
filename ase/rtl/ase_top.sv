@@ -79,6 +79,10 @@ module ase_top();
    logic ddr_pll_ref_clk;
 `endif
 
+`ifdef PLATFORM_PROVIDES_HSSI
+   pr_hssi_if hssi();
+`endif
+
    // CCI-P emulator
    ccip_emulator ccip_emulator
      (
@@ -160,6 +164,10 @@ module ase_top();
       .DDR4b_byteenable       (ddr4[1].byteenable   ),
       .DDR4b_burstcount       (ddr4[1].burstcount   ),
       .DDR4b_readdatavalid    (ddr4[1].readdatavalid),
+`endif
+
+`ifdef AFU_TOP_REQUIRES_HSSI_RAW_PR
+      .hssi                   (hssi                ),
 `endif
 
       .pck_af2cp_sTx          (pck_af2cp_sTx       ),

@@ -37,6 +37,7 @@
 
 import ccip_if_pkg::*;
 `include "avalon_mem_if.vh"
+`include "hssi/pr_hssi_if.vh"
 
 //
 // Because CCI-P's clocks are passed as separate wires to ccip_std_afu
