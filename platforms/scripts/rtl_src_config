@@ -61,6 +61,12 @@ sim_tag_map = {
     '.vh':   'SYSTEMVERILOG_FILE',
     '.svh':  'SYSTEMVERILOG_FILE',
     '.vhd':  'VHDL_FILE',
+
+    # Encrypted/Qsys-generated files for simulation
+    '.vo':   'VERILOG_FILE',
+    '.vp':   'VERILOG_FILE',
+    '.svp':  'SYSTEMVERILOG_FILE',
+
     '.json': 'MISC_FILE'
 }
 

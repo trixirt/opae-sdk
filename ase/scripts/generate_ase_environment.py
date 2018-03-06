@@ -65,7 +65,7 @@ sys.setdefaultencoding('utf8')
 
 # Supported file extensions
 # USERs may modify this if needed
-VLOG_EXTENSIONS = [".svh", ".sv", ".vs", ".v"]
+VLOG_EXTENSIONS = [".svh", ".sv", ".vs", ".v", ".vo", ".vp", ".svp"]
 VHD_EXTENSIONS = [".vhd", ".vhdl"]
 
 VHDL_FILE_LIST = os.getcwd() + "/vhdl_files.list"
