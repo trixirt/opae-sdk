@@ -130,6 +130,7 @@ struct fpga_port_dma_map {
 	/* Input */
 	__u32 argsz;		/* Structure length */
 	__u32 flags;		/* Zero for now */
+#define FPGA_DMA_MAP_WC (1 << 0) /* Write Combine Page Cache Mode */
 	__u64 user_addr;        /* Process virtual address */
 	__u64 length;           /* Length of mapping (bytes)*/
 	/* Output */

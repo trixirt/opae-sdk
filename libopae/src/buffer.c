@@ -169,7 +169,7 @@ fpga_result __FPGA_API__ fpgaPrepareBuffer(fpga_handle handle, uint64_t len,
 		goto out_unlock;
 	}
 
-	if (flags & (~(FPGA_BUF_PREALLOCATED | FPGA_BUF_QUIET))) {
+	if (flags & (~(FPGA_BUF_PREALLOCATED | FPGA_BUF_QUIET | FPGA_BUF_WRITE_COMBINE))) {
 		FPGA_MSG("Unrecognized flags");
 		result = FPGA_INVALID_PARAM;
 		goto out_unlock;
@@ -217,7 +217,8 @@ fpga_result __FPGA_API__ fpgaPrepareBuffer(fpga_handle handle, uint64_t len,
 
 	/* Set ioctl fpga_port_dma_map struct parameters */
 	struct fpga_port_dma_map dma_map = {.argsz = sizeof(dma_map),
-					    .flags = 0,
+					    .flags = flags & FPGA_BUF_WRITE_COMBINE ?
+					    	FPGA_DMA_MAP_WC : 0,
 					    .user_addr = (__u64) addr,
 					    .length = (__u64) len,
 					    .iova = 0};
