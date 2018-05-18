@@ -1,0 +1,154 @@
+@startuml
+
+enum fpga_simulator_ID {
+    verilator = 0,
+    modelsim,
+    icarus,
+    vcs,
+}
+
+enum afu_model_ID {
+    cpp = 0,
+    systemverilog,
+    verilog,
+    vhdl,
+    opencl,
+}
+
+enum fpga_emulator_result {
+    success = 0,
+    error,
+    triggered,
+    timeout,
+    canceled
+}
+
+enum fpga_command_result {
+    afu_success = 0,
+    afu_interrupt,
+    afu_error,
+    afu_event
+}
+
+abstract class ifpga_simulator {
+
+    # fpga_simulator_ID m_fpga_simulator_id;
+
+    # std::shared_ptr<iafu_model<afu_core>> m_afu_model;
+
+    + {static} std::map<fpga_simulator_ID, fpga_simulator_factory<afu_core> *> &get_factory_instance();
+
+    + {static} void registerType(fpga_simulator_ID n, fpga_simulator_factory<afu_core> *factory);
+
+    + {static} std::unique_ptr<fpga_simulator<afu_core>> create_unique(fpga_simulator_ID n);
+
+    + {abstract} void init();
+
+    + {abstract} void run();
+
+    + {abstract} void reset();
+
+    + {abstract} void shutdown();
+
+    + {abstract} void load_afu_model();
+
+    + {abstract} void load_sim_libraries();
+
+    + {abstract} void register_observer();
+
+    + {abstract} void notify_observers();
+
+}
+
+class fpga_simulator_modelsim {
+
+}
+
+class fpga_simulator_verilator {
+
+}
+
+ifpga_simulator <|- fpga_simulator_modelsim
+
+ifpga_simulator <|- fpga_simulator_verilator
+
+abstract class iafu_model {
+
+    # afu_model_ID m_afu_model_id;
+
+    # {static} std::map<afu_model_ID, iafu_model_factory <afu_core> *> &get_factory_instance();
+
+    + {static} void registerType(afu_model_ID n, iafu_model_factory<afu_core> *factory);
+
+    + {static} std::unique_ptr<iafu_model<afu_core>> create_unique(afu_model_ID n);
+
+    + {abstract} void reset();
+
+    + {abstract} void tick();
+
+    + {abstract} bool done();
+
+}
+
+class afu_model_verilog {
+
+}
+
+class afu_model_opencl {
+
+}
+
+class afu_core {
+
+}
+
+class Vccip_std_afu {
+
+}
+
+iafu_model <|- afu_model_verilog
+
+iafu_model <|- afu_model_opencl
+
+iafu_model --> "1" afu_core
+
+afu_core <|- Vccip_std_afu
+
+abstract class iafu_if_model {
+
+}
+
+class iafu_if_model_ccip_tx_rx {
+
+}
+
+class iafu_if_model_avalon_tx_rx {
+
+}
+
+iafu_if_model <|- iafu_if_model_ccip_tx_rx
+
+iafu_if_model <|- iafu_if_model_avalon_tx_rx
+
+abstract class ifpga_emulator {
+
+}
+
+class ifpga_emulator_ccip {
+
+
+}
+
+class ifpga_emulator_ccip {
+
+
+}
+
+
+ifpga_emulator "1" *-- "many" iafu_if_model : contains
+
+ifpga_emulator --> "1" iafu_model
+
+ifpga_emulator --> "1" ifpga_simulator
+
+@enduml
