@@ -67,6 +67,9 @@ add_subdirectory(api)
 # ASE RTL code
 add_subdirectory(rtl)
 
+# ASE C++ emulator
+add_subdirectory(emulator)
+
 ###########################################################################
 ## Extra platform scripts #################################################
 ###########################################################################

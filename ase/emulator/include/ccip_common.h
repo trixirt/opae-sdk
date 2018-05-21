@@ -28,7 +28,9 @@
 #ifndef _ASE_COMMON_H_
 #define _ASE_COMMON_H_
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,7 +64,7 @@
 #include <uuid/uuid.h>
 #include <pthread.h>
 
-
+#undef _GNU_SOURCE
 
 #ifdef SIM_SIDE
 #include "svdpi.h"
@@ -72,7 +74,7 @@
 #define APP_SIDE
 #endif
 
-#include "ase_types.h"
+#include "ase_types_int.h"
 
 /*
  * ASE Unique ID Check
@@ -126,14 +128,259 @@
 #define MAX_USR_INTRS              4
 
 /* *******************************************************************************
+ * Verilog defines
+ * *******************************************************************************/
+
+// Simulation parameteres
+#define CCIP_VERSION_NUMBER      0x070
+
+#define CCIP_CLADDR_WIDTH        42
+#define CCIP_CLDATA_WIDTH        512
+
+#define CCIP_MMIOADDR_WIDTH      16
+#define CCIP_MMIODATA_WIDTH      64
+#define CCIP_TID_WIDTH           9
+
+#define CCIP_MDATA_WIDTH         16
+
+// Number of requests that can be accepted after almost full is asserted.
+#define CCIP_TX_ALMOST_FULL_THRESHOLD  8
+
+#define CCIP_MMIO_RD_TIMEOUT     512
+
+#define CCIP_SYNC_RESET_POLARITY 1       // Active High Reset
+
+/* *******************************************************************************
+ * Verilog base types
+ * *******************************************************************************/
+
+typedef uint8_t t_ccip_clAddr[CCIP_CLADDR_WIDTH];
+typedef uint8_t t_ccip_clData[CCIP_CLDATA_WIDTH];
+
+typedef uint8_t t_ccip_mmioAddr[CCIP_MMIOADDR_WIDTH];
+typedef uint8_t t_ccip_mmioData[CCIP_MMIODATA_WIDTH];
+typedef uint8_t t_ccip_tid[CCIP_TID_WIDTH];
+
+typedef uint8_t t_ccip_mdata[CCIP_MDATA_WIDTH];
+typedef uint8_t t_ccip_clNum[2];
+typedef uint8_t t_ccip_qwIdx[3];
+
+/* *******************************************************************************
+ * Verilog request type encodings
+ * *******************************************************************************/
+
+// Channel 0
+typedef enum {
+	eREQ_RDLINE_I    = 0,      // Memory Read with FPGA Cache Hint=Invalid
+	eREQ_RDLINE_S    = 1,      // Memory Read with FPGA Cache Hint=Shared
+} t_ccip_c0_req;
+
+// Channel 1
+typedef enum {
+	eREQ_WRLINE_I    = 0,       // Memory Write with FPGA Cache Hint=Invalid
+	eREQ_WRLINE_M    = 1,       // Memory Write with FPGA Cache Hint=Modified
+	eREQ_WRPUSH_I    = 2,       // Memory Write with DDIO Hint
+	eREQ_WRFENCE     = 3,       // Memory Write Fence
+	// eREQ_ATOMIC      = 5,      // Atomic operation: Compare-Exchange for Memory Addr  ** NOT SUPPORTED CURRENTELY **
+	eREQ_INTR                  // Interrupt the CPU ** NOT SUPPORTED CURRENTLY **
+} t_ccip_c1_req;
+
+/* *******************************************************************************
+ * Verilog response type encodings
+ * *******************************************************************************/
+
+// Channel 0
+typedef enum {
+	eRSP_RDLINE     = 0,     // Memory Read
+	eRSP_UMSG       = 4,     // UMsg received
+	// eRSP_ATOMIC     = 5      // Atomic Operation: Compare-Exchange for Memory Addr
+} t_ccip_c0_rsp;
+
+// Channel 1
+typedef enum {
+	eRSP_WRLINE     = 0,     // Memory Write
+	eRSP_WRFENCE    = 4,     // Memory Write Fence
+	eRSP_INTR       = 6      // Interrupt delivered to the CPU ** NOT SUPPORTED CURRENTLY **
+} t_ccip_c1_rsp;
+
+/* *******************************************************************************
+ * Verilog Virtual Channel Select
+ * *******************************************************************************/
+
+typedef enum {
+	eVC_VA  = 0,
+	eVC_VL0 = 1,
+	eVC_VH0 = 2,
+	eVC_VH1 = 3
+} t_ccip_vc;
+
+// Multi-CL Memory Request
+typedef enum {
+	eCL_LEN_1 = 0,
+	eCL_LEN_2 = 1,
+	eCL_LEN_4 = 3
+} t_ccip_clLen;
+
+/* *******************************************************************************
+ * Verilog structures for request and response headers
+ * *******************************************************************************/
+
+typedef struct __attribute__((packed)) {
+	t_ccip_vc       vc_sel;
+	uint8_t         rsvd1[2];     // reserved, drive 0
+	t_ccip_clLen    cl_len;
+	t_ccip_c0_req   req_type;
+	uint8_t         rsvd0[6];     // reserved, drive 0
+	t_ccip_clAddr   address;
+	t_ccip_mdata    mdata;
+} t_ccip_c0_ReqMemHdr;
+
+typedef struct __attribute__((packed)) {
+	uint8_t         rsvd2[6];
+	t_ccip_vc       vc_sel;
+	uint8_t         sop;
+	uint8_t         rsvd1;     // reserved, drive 0
+	t_ccip_clLen    cl_len;
+	t_ccip_c1_req   req_type;
+	uint8_t         rsvd0[6];     // reserved, drive 0
+	t_ccip_clAddr   address;
+	t_ccip_mdata    mdata;
+} t_ccip_c1_ReqMemHdr;
+
+typedef struct __attribute__((packed)) {
+	uint8_t         rsvd2[6];          // reserved, drive 0
+	t_ccip_vc       vc_sel;
+	uint8_t         rsvd1[4];          // reserved, drive 0
+	t_ccip_c1_req   req_type;
+	uint8_t         rsvd0[48];          // reserved, drive 0
+	t_ccip_mdata    mdata;
+}t_ccip_c1_ReqFenceHdr;
+
+typedef struct __attribute__((packed)) {
+	uint8_t         rsvd1[12];          // reserved, drive 0
+	t_ccip_c1_req   req_type;
+	uint8_t         rsvd0[61];          // reserved, drive 0
+	uint8_t         id[3];
+}t_ccip_c1_ReqIntrHdr;
+
+typedef struct __attribute__((packed)) {
+	t_ccip_vc       vc_used;
+	uint8_t         rsvd1;          // reserved, don't care
+	uint8_t         hit_miss;
+	uint8_t         rsvd0[2];       // reserved, don't care
+	t_ccip_clNum    cl_num;
+	t_ccip_c0_rsp   resp_type;
+	t_ccip_mdata    mdata;
+} t_ccip_c0_RspMemHdr;
+
+typedef struct __attribute__((packed)) {
+	t_ccip_vc       vc_used;
+	uint8_t          rsvd1;          // reserved, don't care
+	uint8_t          hit_miss;
+	uint8_t          format;
+	uint8_t          rsvd0;          // reserved, don't care
+	t_ccip_clNum    cl_num;
+	t_ccip_c1_rsp   resp_type;
+	t_ccip_mdata    mdata;
+} t_ccip_c1_RspMemHdr;
+
+typedef struct __attribute__((packed)) {
+	uint8_t          rsvd0[8];          // reserved, don't care
+	t_ccip_c1_rsp    resp_type;
+	t_ccip_mdata     mdata;
+} t_ccip_c1_RspFenceHdr;
+
+typedef struct __attribute__((packed)) {
+	uint8_t         rsvd1[8];          // reserved, don't care
+	t_ccip_c1_rsp   resp_type;
+	uint8_t         rsvd0[13];          // reserved, don't care
+	uint8_t         id[3];
+} t_ccip_c1_RspIntrHdr;
+
+// Alternate Channel 0 MMIO request from host :
+//  MMIO requests arrive on the same channel as read responses, sharing
+//  t_if_ccip_c0_Rx below.  When either mmioRdValid or mmioWrValid is set
+//  the message is an MMIO request and should be processed by casting
+//  t_if_ccip_c0_Rx.hdr to t_ccip_c0_ReqMmioHdr.
+typedef struct __attribute__((packed)) {
+	t_ccip_mmioAddr address;    // 4B aligned Mmio address
+	uint8_t         length[2];  // 2'b00- 4B, 2'b01- 8B, 2'b10- 64B
+	uint8_t         rsvd;       // reserved, don't care
+	t_ccip_tid      tid;
+} t_ccip_c0_ReqMmioHdr;
+
+typedef struct __attribute__((packed)) {
+	t_ccip_tid     tid;         // Returned back from ReqMmioHdr
+} t_ccip_c2_RspMmioHdr;
+
+/* *******************************************************************************
+ * CCI-P Input & Output bus structures
  *
+ * Users are encouraged to use these for AFU development
+ * *******************************************************************************/
+
+// Channel 0 : Memory Reads
+typedef struct __attribute__((packed)) {
+	t_ccip_c0_ReqMemHdr  hdr;            // Request Header
+	uint8_t              valid;          // Request Valid
+} t_if_ccip_c0_Tx;
+
+
+// Channel 1 : Memory Writes,  Interrupts, CmpXchg
+typedef struct __attribute__((packed)) {
+	t_ccip_c1_ReqMemHdr  hdr;            // Request Header
+	t_ccip_clData        data;           // Request Data
+	uint8_t              valid;          // Request Wr Valid
+} t_if_ccip_c1_Tx;
+
+// Channel 2 : MMIO Read response
+typedef struct __attribute__((packed)) {
+	t_ccip_c2_RspMmioHdr    hdr;            // Response Header
+	uint8_t                 mmioRdValid;    // Response Read Valid
+	t_ccip_mmioData         data;           // Response Data
+} t_if_ccip_c2_Tx;
+
+// Wrap all Tx channels
+typedef struct __attribute__((packed)) {
+	t_if_ccip_c0_Tx      c0;
+	t_if_ccip_c1_Tx      c1;
+	t_if_ccip_c2_Tx      c2;
+} t_if_ccip_Tx;
+
+// Channel 0: Memory Read response, MMIO Request
+typedef struct __attribute__((packed)) {
+	t_ccip_c0_RspMemHdr  hdr;            //  Rd Response/ MMIO req Header
+	t_ccip_clData        data;           //  Rd Data / MMIO req Data
+	// Only one of valid, mmioRdValid and mmioWrValid may be set
+	// in a cycle.  When either mmioRdValid or mmioWrValid are true
+	// the hdr must be processed specially.  See t_ccip_c0_ReqMmioHdr
+	// above.
+	uint8_t               rspValid;       //  Rd Response Valid
+	uint8_t               mmioRdValid;    //  MMIO Read Valid
+	uint8_t               mmioWrValid;    //  MMIO Write Valid
+} t_if_ccip_c0_Rx;
+
+// Channel 1: Memory Writes
+typedef struct __attribute__((packed)) {
+	t_ccip_c1_RspMemHdr  hdr;            //  Response Header
+	uint8_t               rspValid;       //  Response Valid
+} t_if_ccip_c1_Rx;
+
+// Wrap all channels
+typedef struct __attribute__((packed)) {
+	uint8_t               c0TxAlmFull;    //  C0 Request Channel Almost Full
+	uint8_t               c1TxAlmFull;    //  C1 Request Channel Almost Full
+
+	t_if_ccip_c0_Rx      c0;
+	t_if_ccip_c1_Rx      c1;
+} t_if_ccip_Rx;
+
+/* *******************************************************************************
  * Shared buffer structure
- * Fri Mar 11 09:02:18 PST 2016 : Converted to dual-ended linked list
- *
  * ******************************************************************************/
-// Buffer information structure --
-//   Be careful of alignment within this structure!  The layout must be
-//   identical on both 64 bit and 32 bit compilations.
+
+// Be careful of alignment within this structure!  The layout must be
+// identical on both 64 bit and 32 bit compilations.
 struct buffer_t			//  Descriptiion                    Computed by
 {				// --------------------------------------------
 	int32_t index;		// Tracking id                     | INTERNAL
@@ -146,7 +393,7 @@ struct buffer_t			//  Descriptiion                    Computed by
 	int32_t is_mmiomap;	// Flag memory as CSR map          |
 	int32_t is_umas;	// Flag memory as UMAS region      |
 	uint32_t memsize;	// Memory size                     |   APP
-	char memname[ASE_FILENAME_LEN];	// Shared memory name              | INTERNAL
+	char memname[ASE_FILENAME_LEN];	// Shared memory name      | INTERNAL
 	struct buffer_t *next;
 };
 

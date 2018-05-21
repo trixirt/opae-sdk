@@ -105,58 +105,29 @@ int generate_sockname(char *);
 			++p;			\
 		p;				\
 	})					\
+						\
 
-#ifdef ASE_ERR
+#ifdef ASE_DEBUG
 #undef ASE_ERR
 #endif
-#ifdef ASE_DEBUG
-#define ASE_ERR(format, ...)						\
-	ase_print(ASE_LOG_ERROR, LOG_PREFIX "%s:%u:%s()\t" format, __SHORTEN_FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__) \
-	#else
-#define ASE_ERR(format, ...)						\
-	ase_print(ASE_LOG_ERROR, LOG_PREFIX format, ## __VA_ARGS__)	\
-	#endif
 
 #ifdef ASE_INFO
 #undef ASE_INFO
 #endif
-#ifdef ASE_DEBUG
-#define ASE_INFO(format, ...)						\
-	ase_print(ASE_LOG_INFO, LOG_PREFIX "%s:%u:%s()\t" format, __SHORTEN_FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__) \
-	#else
-#define ASE_INFO(format, ...)						\
-	ase_print(ASE_LOG_INFO, LOG_PREFIX format, ## __VA_ARGS__)	\
-	#endif
-
-
-#ifdef ASE_INFO_2
-#undef ASE_INFO_2
-#endif
-#ifdef ASE_DEBUG
-#define ASE_INFO_2(format, ...)						\
-	ase_print(ASE_LOG_INFO_2, LOG_PREFIX "%s:%u:%s()\t" format, __SHORTEN_FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__) \
-	#else
-#define ASE_INFO_2(format, ...)						\
-	ase_print(ASE_LOG_INFO_2, LOG_PREFIX format, ## __VA_ARGS__)	\
-	#endif
-
-#ifdef ASE_MSG
-#undef ASE_MSG
-#endif
-#ifdef ASE_DEBUG
-#define ASE_MSG(format, ...)						\
-	ase_print(ASE_LOG_MESSAGE, LOG_PREFIX "%s:%u:%s()\t" format, __SHORTEN_FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__) \
-	#else
-#define ASE_MSG(format, ...)						\
-	ase_print(ASE_LOG_MESSAGE, LOG_PREFIX format, ## __VA_ARGS__)	\
-	#endif
 
 #ifdef ASE_DBG
 #undef ASE_DBG
 #endif
+
+#define ASE_ERR(format, ...)   \
+ 	ase_print(ASE_LOG_ERROR, LOG_PREFIX "%s:%u:%s()\t" format, __SHORTEN_FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__) \
+
+#define ASE_INFO(format, ...)						\
+ 	ase_print(ASE_LOG_INFO, LOG_PREFIX format, ## __VA_ARGS__)	\
+
 #define ASE_DBG(format, ...)						\
 	ase_print(ASE_LOG_DEBUG, LOG_PREFIX "%s:%u:%s()\t" format, __SHORTEN_FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__) \
-
+									\
 // SHM memory name length
 #define ASE_FILENAME_LEN        40
 

@@ -1,4 +1,4 @@
-// Copyright(c) 2014-2017, Intel Corporation
+// Copyright(c) 2014-2018, Intel Corporation
 //
 // Redistribution  and  use  in source  and  binary  forms,  with  or  without
 // modification, are permitted provided that the following conditions are met:
@@ -43,12 +43,12 @@ public:
 	uint8_t             uClk_usr;                 // User clock domain.
 	uint8_t             uClk_usrDiv2;             // User clock domain.
 	uint8_t             pck_cp2af_softReset;      // CCI-P ACTIVE HIGH Soft Reset
-	uint8_t             pck_cp2af_pwrState;       // CCI-P AFU Power State
+	uint8_t             pck_cp2af_pwrState[2];    // CCI-P AFU Power State
 	uint8_t             pck_cp2af_error;          // CCI-P Protocol Error Detected
 
 	// Interface structures
-	ccip_pkt_t          pck_cp2af_sRx;           // CCI-P Rx Port
-	ccip_pkt_t          pck_af2cp_sTx;           // CCI-P Tx Port
+	t_if_ccip_Rx        pck_cp2af_sRx;           // CCI-P Rx Port
+	t_if_ccip_Tx        pck_af2cp_sTx;           // CCI-P Tx Port
 
 public:
 	// CONSTRUCTORS
