@@ -135,6 +135,7 @@ endif()
 
 add_subdirectory(safe_string)
 add_subdirectory(libbitstream)
+add_subdirectory(libpacboard)
 
 option(BUILD_LIBOPAE_C "Enable building of libopae-c. This is the default OPAE API implementation." ON)
 mark_as_advanced(BUILD_LIBOPAE_C)
@@ -346,6 +347,7 @@ define_pkg(devel
   samplebin
   safestrlib
   safestrheaders
+  pacboardheaders
   GROUP "devel"
   DISPLAY_NAME "opae-devel"
   DESCRIPTION "OPAE headers, sample source, and documentation"
