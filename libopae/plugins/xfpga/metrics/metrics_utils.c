@@ -932,19 +932,30 @@ fpga_result enum_fpga_metrics(fpga_handle handle)
 		 // DCP RC
 		case FPGA_HW_DCP_RC: {
 
+			glob_t pglob;
+			int gres = glob(sysfs_pwr_path, GLOB_NOSORT, NULL, &pglob);
+			if (gres) {
+				FPGA_MSG("Failed pattern match %s: %s", sysfs_pwr_path, strerror(errno));
+				globfree(&pglob);
+				return result;
+			}
+	
+
+			if (_handle->bmc_handle == NULL)
+				_handle->bmc_handle = dlopen(BMC_LIB, RTLD_LAZY | RTLD_LOCAL);
+
+			if (_handle->bmc_handle) {
+				result = enum_bmc_metrics_info(_handle, &(_handle->fpga_enum_metric_vector), &metric_num, FPGA_HW_DCP_RC);
+				if (result != FPGA_OK) {
+					FPGA_MSG("Failed to enumerate BMC metrics.");
+				}
+
+
 			result = enum_perf_counter_metrics(&(_handle->fpga_enum_metric_vector), &metric_num, _token->sysfspath, FPGA_HW_DCP_RC);
 			if (result != FPGA_OK) {
 				FPGA_MSG("Failed to Enum Perforamnce metrics.");
 			}
 
-			if (_handle->bmc_handle == NULL)
-					_handle->bmc_handle = dlopen(BMC_LIB, RTLD_LAZY | RTLD_LOCAL);
-
-			if (_handle->bmc_handle) {
-				result = enum_bmc_metrics_info(_handle,  &(_handle->fpga_enum_metric_vector), &metric_num, FPGA_HW_DCP_RC);
-				if (result != FPGA_OK) {
-					FPGA_MSG("Failed to enumerate BMC metrics.");
-				}
 
 			}
 
