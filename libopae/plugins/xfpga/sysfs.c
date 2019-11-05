@@ -103,7 +103,7 @@ static sysfs_formats sysfs_path_table[OPAE_KERNEL_DRIVERS] = {
 	 .sysfs_compat_id = "pr/interface_id",
 	 .sysfs_fme_temp_glob = "thermal_mgmt",
 	 .sysfs_fme_pwr_glob = "power_mgmt",
-	 .sysfs_fme_perf_glob = "perf",
+	 .sysfs_fme_perf_glob = "*perf",
 	 .sysfs_port_err = "errors/errors",
 	 .sysfs_port_err_clear = "errors/clear"} };
 

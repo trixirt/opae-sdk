@@ -501,10 +501,10 @@ fpga_result enum_perf_counter_metrics(fpga_metric_vector *vector,
 
 	if (!stat("/sys/class/fpga", &st)) {
 
-		snprintf_s_ss(sysfs_path, sizeof(sysfs_path), "%s/%s", sysfspath, PERF);
+		//snprintf_s_ss(sysfs_path, sizeof(sysfs_path), "%s/%s", sysfspath, PERF);
 
 		glob_t pglob;
-		int gres = glob(sysfs_path, GLOB_NOSORT, NULL, &pglob);
+		int gres = glob(sysfspath, GLOB_NOSORT, NULL, &pglob);
 		if ((gres) || (1 != pglob.gl_pathc)) {
 			globfree(&pglob);
 			return FPGA_NOT_FOUND;
@@ -700,64 +700,69 @@ fpga_result  enum_bmc_metrics_info(struct _fpga_handle *_handle,
 	sdr_details details;
 	bmc_sdr_handle records;
 	bmc_values_handle values;
+  struct stat st;
 
 	if (vector == NULL ||
 		metric_num == NULL) {
 		FPGA_ERR("Invalid input");
 		return result;
 	}
-	result = xfpga_bmcLoadSDRs(_handle, &records, &num_sensors);
-	if (result != FPGA_OK) {
-		FPGA_ERR("Failed to load BMC SDR.");
-		return result;
-	}
+ 
+	if (!stat("/sys/class/fpga", &st)) {
 
-	result = xfpga_bmcReadSensorValues(_handle, records, &values, &num_values);
-	if (result != FPGA_OK) {
-		FPGA_ERR("Failed to read BMC sensor values.");
-		return result;
-	}
-
-	for (x = 0; x < num_sensors; x++) {
-		result = xfpga_bmcGetSDRDetails(_handle, values, x, &details);
-
-
-		if (details.type == BMC_THERMAL) {
-
-			metric_type = FPGA_METRIC_TYPE_THERMAL;
-			snprintf_s_s(group_name, sizeof(group_name), "%s", THERLGMT);
-			snprintf_s_s(units, sizeof(units), "%s", TEMP);
-			snprintf_s_ss(qualifier_name, sizeof(qualifier_name), "%s:%s", THERLGMT, details.name);
-
-		} else if (details.type == BMC_POWER) {
-
-			metric_type = FPGA_METRIC_TYPE_POWER;
-			snprintf_s_s(group_name, sizeof(group_name), "%s", PWRMGMT);
-			snprintf_s_ss(qualifier_name, sizeof(qualifier_name), "%s:%s", PWRMGMT, details.name);
-			snprintf(units, sizeof(units), "%ls", details.units);
-		} else {
-				continue;
-		}
-
-		result = add_metric_vector(vector, *metric_num, qualifier_name, group_name, "", details.name, "", units, FPGA_METRIC_DATATYPE_DOUBLE, metric_type, hw_type, 0);
-		if (result != FPGA_OK) {
-			FPGA_MSG("Failed to add metrics");
-			return result;
-		}
-
-		*metric_num = *metric_num + 1;
-	}
-
-	result = xfpga_bmcDestroySensorValues(_handle, &values);
-	if (result != FPGA_OK) {
-		FPGA_MSG("Failed to Destroy Sensor value.");
-	}
-
-	result = xfpga_bmcDestroySDRs(_handle, &records);
-	if (result != FPGA_OK) {
-		FPGA_ERR("Failed to Destroy SDR.");
-		return result;
-	}
+  	result = xfpga_bmcLoadSDRs(_handle, &records, &num_sensors);
+  	if (result != FPGA_OK) {
+  		FPGA_ERR("Failed to load BMC SDR.");
+  		return result;
+  	}
+  
+  	result = xfpga_bmcReadSensorValues(_handle, records, &values, &num_values);
+  	if (result != FPGA_OK) {
+  		FPGA_ERR("Failed to read BMC sensor values.");
+  		return result;
+  	}
+  
+  	for (x = 0; x < num_sensors; x++) {
+  		result = xfpga_bmcGetSDRDetails(_handle, values, x, &details);
+  
+  
+  		if (details.type == BMC_THERMAL) {
+  
+  			metric_type = FPGA_METRIC_TYPE_THERMAL;
+  			snprintf_s_s(group_name, sizeof(group_name), "%s", THERLGMT);
+  			snprintf_s_s(units, sizeof(units), "%s", TEMP);
+  			snprintf_s_ss(qualifier_name, sizeof(qualifier_name), "%s:%s", THERLGMT, details.name);
+  
+  		} else if (details.type == BMC_POWER) {
+  
+  			metric_type = FPGA_METRIC_TYPE_POWER;
+  			snprintf_s_s(group_name, sizeof(group_name), "%s", PWRMGMT);
+  			snprintf_s_ss(qualifier_name, sizeof(qualifier_name), "%s:%s", PWRMGMT, details.name);
+  			snprintf(units, sizeof(units), "%ls", details.units);
+  		} else {
+  				continue;
+  		}
+  
+  		result = add_metric_vector(vector, *metric_num, qualifier_name, group_name, "", details.name, "", units, FPGA_METRIC_DATATYPE_DOUBLE, metric_type, hw_type, 0);
+  		if (result != FPGA_OK) {
+  			FPGA_MSG("Failed to add metrics");
+  			return result;
+  		}
+  
+  		*metric_num = *metric_num + 1;
+  	}
+  
+  	result = xfpga_bmcDestroySensorValues(_handle, &values);
+  	if (result != FPGA_OK) {
+  		FPGA_MSG("Failed to Destroy Sensor value.");
+  	}
+  
+  	result = xfpga_bmcDestroySDRs(_handle, &records);
+  	if (result != FPGA_OK) {
+  		FPGA_ERR("Failed to Destroy SDR.");
+  		return result;
+  	}
+   }
 
 	return result;
 }
@@ -932,13 +937,13 @@ fpga_result enum_fpga_metrics(fpga_handle handle)
 		 // DCP RC
 		case FPGA_HW_DCP_RC: {
 
-			glob_t pglob;
+			/*glob_t pglob;
 			int gres = glob(sysfs_pwr_path, GLOB_NOSORT, NULL, &pglob);
 			if (gres) {
 				FPGA_MSG("Failed pattern match %s: %s", sysfs_pwr_path, strerror(errno));
 				globfree(&pglob);
 				return result;
-			}
+			}*/
 	
 
 			if (_handle->bmc_handle == NULL)
@@ -951,7 +956,7 @@ fpga_result enum_fpga_metrics(fpga_handle handle)
 				}
 
 
-			result = enum_perf_counter_metrics(&(_handle->fpga_enum_metric_vector), &metric_num, _token->sysfspath, FPGA_HW_DCP_RC);
+			result = enum_perf_counter_metrics(&(_handle->fpga_enum_metric_vector), &metric_num, sysfs_perf_path, FPGA_HW_DCP_RC);
 			if (result != FPGA_OK) {
 				FPGA_MSG("Failed to Enum Perforamnce metrics.");
 			}
@@ -975,7 +980,7 @@ fpga_result enum_fpga_metrics(fpga_handle handle)
 				FPGA_MSG("Failed to Enum Power and Thermal metrics.");
 			}
 			// Perf Counters
-			result = enum_perf_counter_metrics(&(_handle->fpga_enum_metric_vector), &metric_num, _token->sysfspath, hw_type);
+			result = enum_perf_counter_metrics(&(_handle->fpga_enum_metric_vector), &metric_num, sysfs_perf_path, hw_type);
 			if (result != FPGA_OK) {
 				FPGA_MSG("Failed to Enum Performance metrics.");
 			}
