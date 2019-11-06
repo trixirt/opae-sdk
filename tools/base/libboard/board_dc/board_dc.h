@@ -33,33 +33,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define CDEV_ID_SIZE           8
-#define MAX_PORTS              8
-#define SYSFS_MAX_SIZE         256
-#define MAC_BYTE_SIZE          4
-#define VER_BUF_SIZE           16
 #define FPGA_VAR_BUF_LEN       256
-#define FPGA_PHYGROUP_SIZE     256
-#define MAC_BUF_SIZE           8
 
-typedef struct _fpga_pkvl_info {
-	uint32_t polling_mode;
-	uint32_t status;
-}fpga_pkvl_info;
-
-typedef struct _fpga_phy_group_info {
-	unsigned int    argsz;
-	unsigned int    flags;
-	unsigned char  speed;
-	unsigned char  phy_num;
-	unsigned char  mac_num;
-	unsigned char  group_id;
-}fpga_phy_group_info;
-
-typedef union _pkvl_mac {
-	unsigned int dword;
-	unsigned char byte[MAC_BYTE_SIZE];
-} pkvl_mac;
 
 /**
 * Prints BMC, MAX10 and NIOS version.
@@ -71,69 +46,6 @@ typedef union _pkvl_mac {
 */
 fpga_result print_board_info(fpga_token token);
 
-/**
-* Prints phy group informantion.
-*
-* @param[in] token            fpga_token object for device (FPGA_DEVICE type)
-* @returns FPGA_OK on success. FPGA_NOT_FOUND if phy group sysfs not found.
-* FPGA_INVALID_PARAM if invalid parameters were provide
-*
-*/
-fpga_result print_phy_info(fpga_token token);
-
-/**
-* Prints mac informantion.
-*
-* @param[in] token            fpga_token object for device (FPGA_DEVICE type)
-* @returns FPGA_OK on success. FPGA_NOT_FOUND if mac sysfs not found.
-* FPGA_INVALID_PARAM if invalid parameters were provide
-*
-*/
-fpga_result print_mac_info(fpga_token token);
-
-
-/**
-* Get MAC information.
-*
-* @param[in] token           fpga_token object for device (FPGA_DEVICE type)
-* @param[inout] mac_info     pointer to mac info struct or char string
-*                            user allocates memory and free mac info
-* @param[in] len             length of char mac_info string
-* @returns FPGA_OK on success. FPGA_NOT_FOUND if mac sysfs not found.
-* FPGA_INVALID_PARAM if invalid parameters were provide
-*
-*/
-fpga_result read_mac_info(fpga_token token, unsigned char *mac_info, size_t len);
-
-/**
-* Get PHY group information.
-*
-* @param[in] token           fpga_token object for device (FPGA_DEVICE type)
-* @param[inout] group_info   pointer to struct fpga_phy_group_info
-*                            user allocates memory and free phy group info
-* @param[inout] group_num    pointer to group num
-* @returns FPGA_OK on success. FPGA_NOT_FOUND if phy group sysfs not found.
-* FPGA_INVALID_PARAM if invalid parameters were provide
-*
-*/
-fpga_result read_phy_group_info(fpga_token token,
-				fpga_phy_group_info *group_info,
-				uint32_t *group_num);
-
-/**
-* Get PKVL information.
-*
-* @param[in] token           fpga_token object for device (FPGA_DEVICE type)
-* @param[inout] pkvl_info    pointer to struct fpga_pkvl_info
-*                            user allocates memory and free pkvl info
-* @param[inout] fpga_mode    pointer to fpga mode
-* @returns FPGA_OK on success. FPGA_NOT_FOUND if pkvl sysfs not found.
-* FPGA_INVALID_PARAM if invalid parameters were provide
-*
-*/
-fpga_result read_pkvl_info(fpga_token token,
-				fpga_pkvl_info *pkvl_info,
-				int *fpga_mode);
 
 /**
 * Get PCB information.
@@ -184,18 +96,6 @@ fpga_result read_bmcfw_version(fpga_token token, char *bmcfw_var, size_t len);
 *
 */
 fpga_result parse_fw_ver(char *buf, char *fw_ver, size_t len);
-
-/**
-* get phy group info from driver.
-*
-* @param[in] dev_path        pointer to device path
-* @param[inout] fw_ver       pointer to fpga_phy_group_info
-* @returns FPGA_OK on success. FPGA_EXCEPTION if FW version is invlaid.
-*
-*/
-fpga_result get_phy_info(char *dev_path, fpga_phy_group_info *info);
-
-fpga_result print_pkvl_version(fpga_token token);
 
 
 #ifdef __cplusplus
