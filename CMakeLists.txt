@@ -30,35 +30,36 @@ project(opae)
 ############################################################################
 ## Get git hash info, if available #########################################
 ############################################################################
-find_program(GIT_EXECUTABLE git)
-if(EXISTS ${GIT_EXECUTABLE})
-  execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_COMMIT_HASH
-    RESULT_VARIABLE GIT_LOG_RESULT
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT ${GIT_LOG_RESULT} EQUAL 0)
-      set(GIT_COMMIT_HASH unknown)
-    endif(NOT ${GIT_LOG_RESULT} EQUAL 0)
+set(GIT_COMMIT_HASH unknown)
+set(INTEL_FPGA_TREE_DIRTY 0)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+  find_program(GIT_EXECUTABLE git)
+  if(EXISTS ${GIT_EXECUTABLE})
+    execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_COMMIT_HASH
+      RESULT_VARIABLE GIT_LOG_RESULT
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+      if(NOT ${GIT_LOG_RESULT} EQUAL 0)
+        set(GIT_COMMIT_HASH unknown)
+      endif(NOT ${GIT_LOG_RESULT} EQUAL 0)
 
-  execute_process(COMMAND ${GIT_EXECUTABLE} diff --stat
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_DIFF_OUTPUT
-    RESULT_VARIABLE GIT_DIFF_RESULT
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(NOT ${GIT_DIFF_RESULT} EQUAL 0)
-    set(INTEL_FPGA_TREE_DIRTY 0)
-  else(NOT ${GIT_DIFF_RESULT} EQUAL 0)
-    if(GIT_DIFF_OUTPUT)
-      set(INTEL_FPGA_TREE_DIRTY 1)
-    else(GIT_DIFF_OUTPUT)
+    execute_process(COMMAND ${GIT_EXECUTABLE} diff --stat
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_DIFF_OUTPUT
+      RESULT_VARIABLE GIT_DIFF_RESULT
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT ${GIT_DIFF_RESULT} EQUAL 0)
       set(INTEL_FPGA_TREE_DIRTY 0)
-    endif(GIT_DIFF_OUTPUT)
-  endif(NOT ${GIT_DIFF_RESULT} EQUAL 0)
-else(EXISTS ${GIT_EXECUTABLE})
-  set(GIT_COMMIT_HASH unknown)
-  set(INTEL_FPGA_TREE_DIRTY 0)
-endif(EXISTS ${GIT_EXECUTABLE})
+    else(NOT ${GIT_DIFF_RESULT} EQUAL 0)
+      if(GIT_DIFF_OUTPUT)
+        set(INTEL_FPGA_TREE_DIRTY 1)
+      else(GIT_DIFF_OUTPUT)
+        set(INTEL_FPGA_TREE_DIRTY 0)
+      endif(GIT_DIFF_OUTPUT)
+    endif(NOT ${GIT_DIFF_RESULT} EQUAL 0)
+  endif(EXISTS ${GIT_EXECUTABLE})
+endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
 
 ############################################################################
 ## Add 'versioning' library ################################################
