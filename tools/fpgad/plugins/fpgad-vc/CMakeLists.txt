@@ -1,4 +1,4 @@
-## Copyright(c) 2017-2020, Intel Corporation
+## Copyright(c) 2019-2020, Intel Corporation
 ##
 ## Redistribution  and  use  in source  and  binary  forms,  with  or  without
 ## modification, are permitted provided that the following conditions are met:
@@ -24,22 +24,18 @@
 ## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED OF THE
 ## POSSIBILITY OF SUCH DAMAGE.
 
-opae_add_subdirectory(argsfilter)
-opae_add_subdirectory(libboard/board_rc)
-opae_add_subdirectory(libboard/board_vc)
-opae_add_subdirectory(libboard/board_dc)
-opae_add_subdirectory(fpgaconf)
-opae_add_subdirectory(fpgainfo)
-opae_add_subdirectory(fpgametrics)
-opae_add_subdirectory(fpgaport)
-opae_add_subdirectory(fpgad)
+opae_add_module_library(TARGET fpgad-vc
+    SOURCE fpgad-vc.c
+    LIBS
+        opae-c
+        fpgad-api
+        ${libjson-c_LIBRARIES}
+    COMPONENT toolfpgad_vc
+)
 
-# extra
-opae_add_subdirectory(extra/userclk)
-opae_add_subdirectory(extra/packager)
-opae_add_subdirectory(extra/c++utils)
-opae_add_subdirectory(extra/fpgadiag)
-opae_add_subdirectory(extra/mmlink)
-opae_add_subdirectory(extra/ras)
-opae_add_subdirectory(extra/pac_hssi_config)
-opae_add_subdirectory(extra/fpgabist)
+target_include_directories(fpgad-vc
+    PRIVATE
+        ${OPAE_SDK_SOURCE}/tools
+        ${OPAE_LIBS_ROOT}/libopae-c
+        ${OPAE_LIBS_ROOT}/libbitstream
+)
