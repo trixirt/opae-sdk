@@ -257,7 +257,6 @@ done
 %config(noreplace) %{_sysconfdir}/sysconfig/fpgad.conf*
 %{_unitdir}/fpgad.service
 %{_libdir}/opae/libfpgad-vc.so*
-%{_bindir}/eth_group_mdev.sh
 %{_usr}/share/opae/*
 %{_datadir}/doc/opae.admin/LICENSE
 %{python3_sitelib}/opae*
