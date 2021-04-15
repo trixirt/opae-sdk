@@ -248,7 +248,7 @@ done
 %{_bindir}/fpgametrics
 %{_bindir}/fpga_dma_N3000_test
 %{_bindir}/fpga_dma_test
-%{_bindir}/PACSign*
+# % {_bindir}/PACSign*
 %{_bindir}/fpgad*
 %{_bindir}/host_exerciser*
 %{_bindir}/opaevfio*
