@@ -42,6 +42,8 @@ echo "patch:$patch"
 RPMBUILD_DIR="${SCRIPT_DIR}/rpmbuild"
 SDK_DIR="$(cd "${SCRIPT_DIR}/../../../" && pwd)"
 
+#            'systemd-rpm-macros' \
+#
 # Check for prerequisite packages.
 for pkg in 'make' \
            'cmake' \
@@ -53,14 +55,13 @@ for pkg in 'make' \
            'json-c-devel' \
            'libuuid-devel' \
            'python3-sphinx' \
-           'python3-devel' \
+           'python3*-devel' \
            'pybind11-devel' \
            'python3-pip' \
            'rpm-build' \
            'python3-virtualenv' \
            'python3-pip' \
            'systemd' \
-           'systemd-rpm-macros' \
            'rpmdevtools'
 do
     dnf list installed "${pkg}" >/dev/null 2>&1
