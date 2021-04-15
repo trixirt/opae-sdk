@@ -152,9 +152,11 @@ pushd %{_topdir}/BUILD/%{name}-%{version}-%{opae_release}/python/opae.admin/
 %{__python3} setup.py install --single-version-externally-managed  --root=%{buildroot} 
 popd
 
-pushd %{_topdir}/BUILD/%{name}-%{version}-%{opae_release}/python/pacsign
-%{__python3} setup.py install --single-version-externally-managed --root=%{buildroot} 
-popd
+# 8.2
+# ERROR   0002: file '/usr/lib/python3.6/site-packages/pacsign/hsm_managers/openssl/library/libcrypto.so' contains an invalid rpath 'WD' in [WD]
+# pushd %{_topdir}/BUILD/%{name}-%{version}-%{opae_release}/python/pacsign
+# %{__python3} setup.py install --single-version-externally-managed --root=%{buildroot} 
+# popd
 
 for file in %{buildroot}%{python3_sitelib}/opae/admin/tools/{fpgaflash,fpgaotsu,fpgaport,fpgasupdate,ihex2ipmi,rsu,super_rsu,bitstream_info}.py; do
    chmod a+x $file
@@ -260,7 +262,7 @@ done
 %{_usr}/share/opae/*
 %{_datadir}/doc/opae.admin/LICENSE
 %{python3_sitelib}/opae*
-%{python3_sitelib}/pacsign*
+# % {python3_sitelib}/pacsign*
 # part of the jsonschema testsuite, do not deliver
 %exclude /usr/share/opae/python/jsonschema-2.3.0/json/bin/jsonschema_suite
 
