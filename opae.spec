@@ -86,7 +86,9 @@ mkdir -p %{buildroot}%{_usr}/src/opae/cmake/modules
 
 for s in FindSphinx.cmake
 do
-  cp "cmake/${s}" %{buildroot}%{_usr}/src/opae/cmake/
+  if [ -f "cmake/${s}" ]; then
+    cp "cmake/${s}" %{buildroot}%{_usr}/src/opae/cmake/
+  fi
 done
 
 
