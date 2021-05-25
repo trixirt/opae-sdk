@@ -239,6 +239,7 @@ cp samples/n5010-ddr-test/n5010-ddr-test.c %{buildroot}%{_usr}/src/opae/samples/
 %{_libdir}/opae/libfpgad-vc.so*
 %{_usr}/share/opae/*
 %{_datadir}/doc/opae.admin/LICENSE
+%{python3_sitelib}/ethernet*
 %{python3_sitelib}/opae*
 %{python3_sitelib}/pacsign*
 # part of the jsonschema testsuite, do not deliver
