@@ -244,8 +244,12 @@ cp samples/n5010-ddr-test/n5010-ddr-test.c %{buildroot}%{_usr}/src/opae/samples/
 %{_usr}/share/opae/*
 %{_datadir}/doc/opae.admin/LICENSE
 %{python3_sitelib}/ethernet*
+%{python3_sitelib}/hssi_ethernet*
 %{python3_sitelib}/opae*
 %{python3_sitelib}/pacsign*
+%{python3_sitearch}/libvfio*
+%{python3_sitearch}/opae*
+%{python3_sitearch}/pyopaeuio*
 # part of the jsonschema testsuite, do not deliver
 %exclude /usr/share/opae/python/jsonschema-2.3.0/json/bin/jsonschema_suite
 
